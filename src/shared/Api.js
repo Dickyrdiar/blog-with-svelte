@@ -11,3 +11,9 @@ export async function FetchData(url) {
     console.log(error)
   }
 }
+
+// export async function loadDetail({ params }) {
+//   const articleId = params.id
+
+//   const articles = await axios.get()
+// }
