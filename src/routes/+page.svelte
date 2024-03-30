@@ -2,25 +2,33 @@
   // @ts-nocheck
 
   import { onMount } from "svelte";
-  // @ts-nocheck
-
-  import welcome from "$lib/images/svelte-welcome.webp";
-  import welcome_fallback from "$lib/images/svelte-welcome.png";
   import "./styles.css";
   import { FetchData } from "../shared/Api";
+  import Card from "../components/Card/Card.svelte";
+  // import { Spineer } from "flowbite-svelte";
 
-  let data;
+  let data = [];
+  let obsever;
+  let page = 1;
+  let loading = false;
 
   onMount(async () => {
+    loading = true;
     try {
-      const datafetch = await FetchData("/articles");
+      const datafetch = await FetchData(`/articles`);
       data = datafetch?.data;
+      console.log("data", datafetch);
     } catch (err) {
       console.log(err);
+    } finally {
+      loading = false;
     }
-
-    console.log("data", data);
   });
+
+  function handleClickDetail(event) {
+    event.preventDefault();
+    console.log("id", event);
+  }
 </script>
 
 <svelte:head>
@@ -28,28 +36,23 @@
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<section>
-  <h1>
-    <span class="welcome">
-      <picture>
-        <source srcset={welcome} type="image/webp" />
-        <img src={welcome_fallback} alt="Welcome" />
-      </picture>
-    </span>
-
-    <div
-      class="container mx-auto border border-indigo-50 px-4 flex justify-center"
-    >
-      this is tailwind with svelte
-    </div>
-    <div class="flex justify-center">
+<section class="w-full">
+  {#if loading}
+    <div class="flex jus items-center h-screen">loading....</div>
+  {:else}
+    <div class="p-4 h-screen bg-red-3 grid grid-cols-3">
       {#each data as val}
-        {val?.title}
+        <div>
+          <Card
+            idArticles={() => handleClickDetail()}
+            title={val.title}
+            desc={val.description}
+            img={val.cover_image}
+          />
+        </div>
       {/each}
     </div>
-
-    <!-- <MyApiFetch /> -->
-  </h1>
+  {/if}
 </section>
 
 <!-- <style>
