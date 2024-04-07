@@ -12,6 +12,16 @@ export async function FetchData(url) {
   }
 }
 
+// @ts-ignore
+export async function fetchDataPodcast(url) {
+  try {
+    const response = await axios.get(`${API_URL}/${url}`)
+    return response
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 // export async function loadDetail({ params }) {
 //   const articleId = params.id
 
