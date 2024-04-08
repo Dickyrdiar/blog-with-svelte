@@ -1,4 +1,6 @@
 <script>
+  // @ts-nocheck
+
   import {
     Button,
     Input,
@@ -9,11 +11,12 @@
     Navbar,
   } from "flowbite-svelte";
   import { SearchOutline } from "flowbite-svelte-icons";
+  import { goto } from "$app/navigation";
 
   const menuItems = [
     { id: 1, label: "Home", href: "/" },
     { id: 2, label: "Podcast", href: "/podcast" },
-    { id: 3, label: "Videos", href: "/pricing" },
+    { id: 3, label: "Videos", href: "/videos" },
   ];
 </script>
 
