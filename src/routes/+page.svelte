@@ -6,7 +6,7 @@
   import { FetchData } from "../shared/Api";
   import Card from "../components/Card/Card.svelte";
   import { Spinner } from "flowbite-svelte";
-  // import { Spineer } from "flowbite-svelte";
+  import { goto } from "$app/navigation";
 
   let data = [];
   let obsever;
@@ -16,9 +16,8 @@
   onMount(async () => {
     loading = true;
     try {
-      const datafetch = await FetchData(`/articles`);
+      const datafetch = await FetchData(`/articles?page${page}`);
       data = datafetch?.data;
-      // console.log("data", datafetch);
     } catch (err) {
       console.log(err);
     } finally {
@@ -26,10 +25,9 @@
     }
   });
 
-  function handleClickDetail(event) {
-    event.preventDefault();
-    console.log("id", event);
-  }
+  const handleclick = (value) => () => {
+    goto(`/detail/${value.id}`);
+  };
 </script>
 
 <svelte:head>
@@ -50,7 +48,7 @@
         {#each data as val}
           <div class="mt-[20px]">
             <Card
-              idArticles={() => handleClickDetail()}
+              idArticles={handleclick(val)}
               title={val.title}
               desc={val.description}
               img={val.cover_image}
