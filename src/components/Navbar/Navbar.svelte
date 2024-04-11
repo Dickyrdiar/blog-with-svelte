@@ -15,7 +15,7 @@
 
   const menuItems = [
     { id: 1, label: "Home", href: "/" },
-    { id: 2, label: "Podcast", href: "/podcast" },
+    { id: 2, label: "Podcast", href: "/podcasts" },
     { id: 3, label: "Videos", href: "/videos" },
   ];
 </script>

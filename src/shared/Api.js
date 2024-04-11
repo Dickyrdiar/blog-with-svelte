@@ -1,7 +1,7 @@
 // @ts-nocheck
 import axios from "axios"
 
-const API_URL = 'https://dev.to/api'
+export const API_URL = 'https://dev.to/api'
 
 // @ts-ignore
 export async function FetchData(url) {
