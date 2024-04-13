@@ -5,13 +5,17 @@
   import "./styles.css";
   import { FetchData } from "../shared/Api";
   import Card from "../components/Card/Card.svelte";
-  import { Spinner } from "flowbite-svelte";
+  import { Spinner, Button } from "flowbite-svelte";
   import { goto } from "$app/navigation";
 
   let data = [];
   let obsever;
   let page = 1;
   let loading = false;
+
+  function handleclickMorePage() {
+    page++;
+  }
 
   onMount(async () => {
     loading = true;
@@ -26,7 +30,7 @@
   });
 
   const handleclick = (value) => () => {
-    goto(`/detail/${value.id}`);
+    return console.log("value id", value);
   };
 </script>
 
@@ -48,7 +52,7 @@
         {#each data as val}
           <div class="mt-[20px]">
             <Card
-              idArticles={handleclick(val)}
+              onAction={() => handleclick(val)}
               title={val.title}
               desc={val.description}
               img={val.cover_image}
@@ -58,6 +62,8 @@
       </div>
     </div>
   {/if}
+
+  <!-- <Button on:click={() => handleclickMorePage()}>load more</Button> -->
 </section>
 
 <!-- <style>

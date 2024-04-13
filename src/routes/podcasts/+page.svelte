@@ -39,8 +39,10 @@
         {#each data as value}
           <div class="mt-[20px]">
             <Card
-              title={value?.podcast?.title}
+              title={value?.title}
               img={value?.podcast?.image_url}
+              desc={value?.podcast?.title}
+              idArticles={value?.path}
             />
           </div>
         {/each}
