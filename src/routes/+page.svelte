@@ -1,37 +1,46 @@
 <script>
   // @ts-nocheck
 
+  import { FetchData } from "../shared/Api";
   import { onMount } from "svelte";
   import "./styles.css";
-  import { FetchData } from "../shared/Api";
   import Card from "../components/Card/Card.svelte";
   import { Spinner, Button } from "flowbite-svelte";
-  import { goto } from "$app/navigation";
 
   let data = [];
-  let obsever;
   let page = 1;
   let loading = false;
 
-  function handleclickMorePage() {
-    page++;
+  async function fetchMoreData() {
+    try {
+      const response = await FetchData(`/articles?page${page}`);
+      data = [...data, ...response?.data];
+    } catch (err) {
+      console.log("error", err);
+    }
   }
 
-  onMount(async () => {
-    loading = true;
-    try {
-      const datafetch = await FetchData(`/articles?page${page}`);
-      data = datafetch?.data;
-    } catch (err) {
-      console.log(err);
-    } finally {
-      loading = false;
+  function handleScroll() {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 5) {
+      fetchMoreData();
     }
+  }
+
+  onMount(() => {
+    fetchMoreData();
+  });
+
+  window.addEventListener("scroll", handleScroll);
+  onDestroy(() => {
+    window.removeEventListener("scroll", handleScroll);
   });
 
   const handleclick = (value) => () => {
     return console.log("value id", value);
   };
+
+  console.log("data", data);
 </script>
 
 <svelte:head>
