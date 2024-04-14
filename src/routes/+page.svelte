@@ -1,37 +1,55 @@
 <script>
   // @ts-nocheck
 
+  import { FetchData } from "../shared/Api";
   import { onMount } from "svelte";
   import "./styles.css";
-  import { FetchData } from "../shared/Api";
   import Card from "../components/Card/Card.svelte";
-  import { Spinner, Button } from "flowbite-svelte";
-  import { goto } from "$app/navigation";
+  import { Spinner } from "flowbite-svelte";
 
   let data = [];
-  let obsever;
   let page = 1;
   let loading = false;
+  let hasMore = true;
+  let observerRef = null;
 
-  function handleclickMorePage() {
-    page++;
-  }
-
-  onMount(async () => {
+  async function fetchMoreData() {
     loading = true;
+
     try {
-      const datafetch = await FetchData(`/articles?page${page}`);
-      data = datafetch?.data;
+      const response = await FetchData(`/articles?page=${page}`);
+      data = data.concat(response?.data);
+      hasMore = response?.data?.next || response?.data?.hasnNextPage;
     } catch (err) {
-      console.log(err);
+      console.log("error", err);
     } finally {
       loading = false;
     }
+  }
+
+  const handleInterSection = (entries) => {
+    const [entry] = entries;
+    if (entry.isIntersecting && hasMore) {
+      page++;
+      fetchMoreData;
+    }
+  };
+
+  $: {
+    fetchMoreData();
+  }
+
+  onMount(() => {
+    const options = { threshold: 0.5 };
+    observerRef = new IntersectionObserver(handleInterSection, options);
+    observerRef.observe(observerRef);
   });
 
-  const handleclick = (value) => () => {
-    return console.log("value id", value);
-  };
+  onDestroy(() => {
+    if (observerRef) {
+      observerRef.disconnect();
+    }
+  });
 </script>
 
 <svelte:head>
@@ -47,12 +65,15 @@
       <Spinner />
     </div>
   {:else}
-    <div class="flex justify-center items-center">
+    <div
+      class="flex justify-center items-center infinite-scroll"
+      bind:this={observerRef}
+    >
       <div class="p-4 grid grid-cols-3 gap-4">
         {#each data as val}
           <div class="mt-[20px]">
             <Card
-              onAction={() => handleclick(val)}
+              link={`/article/${val.id}`}
               title={val.title}
               desc={val.description}
               img={val.cover_image}
