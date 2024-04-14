@@ -5,42 +5,51 @@
   import { onMount } from "svelte";
   import "./styles.css";
   import Card from "../components/Card/Card.svelte";
-  import { Spinner, Button } from "flowbite-svelte";
+  import { Spinner } from "flowbite-svelte";
 
   let data = [];
   let page = 1;
   let loading = false;
+  let hasMore = true;
+  let observerRef = null;
 
   async function fetchMoreData() {
+    loading = true;
+
     try {
-      const response = await FetchData(`/articles?page${page}`);
-      data = [...data, ...response?.data];
+      const response = await FetchData(`/articles?page=${page}`);
+      data = data.concat(response?.data);
+      hasMore = response?.data?.next || response?.data?.hasnNextPage;
     } catch (err) {
       console.log("error", err);
+    } finally {
+      loading = false;
     }
   }
 
-  function handleScroll() {
-    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 5) {
-      fetchMoreData();
+  const handleInterSection = (entries) => {
+    const [entry] = entries;
+    if (entry.isIntersecting && hasMore) {
+      page++;
+      fetchMoreData;
     }
+  };
+
+  $: {
+    fetchMoreData();
   }
 
   onMount(() => {
-    fetchMoreData();
+    const options = { threshold: 0.5 };
+    observerRef = new IntersectionObserver(handleInterSection, options);
+    observerRef.observe(observerRef);
   });
 
-  window.addEventListener("scroll", handleScroll);
   onDestroy(() => {
-    window.removeEventListener("scroll", handleScroll);
+    if (observerRef) {
+      observerRef.disconnect();
+    }
   });
-
-  const handleclick = (value) => () => {
-    return console.log("value id", value);
-  };
-
-  console.log("data", data);
 </script>
 
 <svelte:head>
@@ -56,12 +65,15 @@
       <Spinner />
     </div>
   {:else}
-    <div class="flex justify-center items-center">
+    <div
+      class="flex justify-center items-center infinite-scroll"
+      bind:this={observerRef}
+    >
       <div class="p-4 grid grid-cols-3 gap-4">
         {#each data as val}
           <div class="mt-[20px]">
             <Card
-              onAction={() => handleclick(val)}
+              link={`/article/${val.id}`}
               title={val.title}
               desc={val.description}
               img={val.cover_image}

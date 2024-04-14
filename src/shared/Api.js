@@ -31,3 +31,13 @@ export async function fetchVideos(url) {
     console.log(error)
   }
 }
+
+
+export async function fetchDataDetail(urlId) {
+  try {
+    const responseDetail = await axios.get(`${API_URL}/articles/${urlId}`)
+    return responseDetail
+  } catch (error) {
+    console.log("error", error)
+  }
+}

@@ -6,7 +6,7 @@
   export let title;
   export let desc;
   export let img;
-  export let onAction = () => {};
+  export let link;
 </script>
 
 <!-- <div class="w-full">
@@ -17,7 +17,7 @@
 
 <Card {img} class="max-h-[100%]">
   <A
-    on:click={() => onAction()}
+    href={link}
     class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
   >
     {title}
